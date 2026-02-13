@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <title>A gdyby ta diagnoza dotyczyła Ciebie?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        :root {
+            --bg-main: #f2f2f2;
+            --accent-red: #d62828;
+            --text-dark: #2b2b2b;
+            --text-muted: #555555;
+            --card-green: #4caf50;
+            --card-amber: #f4a300;
+            --card-red: #c62828;
+            --card-radius: 14px;
+            --transition-fast: 0.25s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-main);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 18px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 14px;
+            color: var(--accent-red);
+        }
+
+        .tagline {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(120deg, rgba(0,0,0,0.55), rgba(0,0,0,0.35)),
+                url("https://images.pexels.com/photos/6129681/pexels-photo-6129681.jpeg?auto=compress&cs=tinysrgb&w=1600") center/cover no-repeat;
+            filter: grayscale(15%);
+            z-index: -2;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(214,40,40,0.35), transparent 55%);
+            z-index: -1;
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 40px;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        @media (max-width: 900px) {
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hero-text h1 {
+            font-size: clamp(32px, 4vw, 44px);
+            margin-bottom: 18px;
+            line-height: 1.15;
+        }
+
+        .hero-text h1 span {
+            color: #ffdddd;
+        }
+
+        .hero-text p {
+            font-size: 16px;
+            max-width: 520px;
+            color: #f0f0f0;
+            margin-bottom: 26px;
+        }
+
+        .hero-meta {
+            font-size: 13px;
+            color: #e0e0e0;
+            opacity: 0.9;
+        }
+
+        .hero-meta strong {
+            color: #ffffff;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 26px;
+            border-radius: 999px;
+            border: none;
+            background: var(--accent-red);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(0,0,0,0.35);
+            background: #b71f1f;
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.7;
+            cursor: default;
+            transform: none;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+        }
+
+        .primary-btn span.icon {
+            font-size: 18px;
+        }
+
+        .card-area {
+            background: rgba(255,255,255,0.96);
+            border-radius: 18px;
+            padding: 22px 22px 26px;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+            color: var(--text-dark);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 14px;
+        }
+
+        .card-header-title {
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .card-header-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card-visual-wrapper {
+            position: relative;
+            height: 220px;
+            margin-bottom: 16px;
+        }
+
+        .card-visual {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 278px;
+            height: 243px;
+            border-radius: var(--card-radius);
+            background: #ffffff;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 18px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease, background 0.3s ease, color 0.3s ease;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .card-label {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #f7f7f7;
+            max-width: 220px;
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: rgba(0,0,0,0.18);
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 999px;
+        }
+
+        /* Tasowanie – animacja talii */
+        .shuffle-stack {
+            position: relative;
+            width: 100%;
+            max-width: 260px;
+            height: 180px;
+            margin: 0 auto;
+        }
+
+        .shuffle-card {
+            position: absolute;
+            inset: 0;
+            border-radius: var(--card-radius);
+            background: linear-gradient(135deg, #ffffff, #e4e4e4);
+            box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+            border: 1px solid #dddddd;
+        }
+
+        .shuffle-card:nth-child(1) {
+            animation: shuffle1 0.9s infinite ease-in-out;
+        }
+        .shuffle-card:nth-child(2) {
+            animation: shuffle2 0.9s infinite ease-in-out;
+            animation-delay: 0.15s;
+        }
+        .shuffle-card:nth-child(3) {
+            animation: shuffle3 0.9s infinite ease-in-out;
+            animation-delay: 0.3s;
+        }
+
+        @keyframes shuffle1 {
+            0%, 100% { transform: translate(-6px, 4px) rotate(-4deg); opacity: 0.7; }
+            50% { transform: translate(4px, -4px) rotate(2deg); opacity: 1; }
+        }
+        @keyframes shuffle2 {
+            0%, 100% { transform: translate(4px, 6px) rotate(3deg); opacity: 0.7; }
+            50% { transform: translate(-4px, -6px) rotate(-2deg); opacity: 1; }
+        }
+        @keyframes shuffle3 {
+            0%, 100% { transform: translate(0px, -4px) rotate(1deg); opacity: 0.7; }
+            50% { transform: translate(2px, 4px) rotate(-3deg); opacity: 1; }
+        }
+
+        .shuffle-label {
+            position: absolute;
+            inset: auto 0 10px 0;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .card-footer-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .secondary-btn {
+            border-radius: 999px;
+            border: 1px solid #cccccc;
+            background: #ffffff;
+            color: var(--text-dark);
+            font-size: 13px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+        }
+
+        .secondary-btn:hover {
+            background: #f5f5f5;
+        }
+
+        section.info {
+            max-width: 1100px;
+            margin: 40px auto 30px;
+            padding: 0 20px 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 26px;
+        }
+
+        @media (max-width: 900px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .info p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .legend {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        }
+
+        .legend-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+        }
+
+        .legend-color.green { background: var(--card-green); }
+        .legend-color.amber { background: var(--card-amber); }
+        .legend-color.red { background: var(--card-red); }
+
+        footer {
+            border-top: 1px solid #dddddd;
+            padding: 14px 20px 18px;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: #ffffff;
+        }
+
+        footer a {
+            color: var(--accent-red);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <header>
+        <div>
+            <div class="logo-text">OnkoSymulator</div>
+            <div class="tagline">Symulacja dostępu do terapii onkologicznych</div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="hero-text">
+                    <h1>A gdyby ta diagnoza dotyczyła <span>Ciebie</span>?</h1>
+                    <p>
+                        Wyobraź sobie, że właśnie usłyszałeś diagnozę nowotworu. Od tego, jaką „kartę” wylosujesz,
+                        zależy, czy otrzymasz leczenie rekomendowane przez ekspertów, czy pozostanie ono poza Twoim zasięgiem.
+                    </p>
+                    <p class="hero-meta">
+                        Dane inspirowane analizami <strong>Oncoindex</strong> i rekomendacjami <strong>Europejskiego Towarzystwa Onkologii Klinicznej (ESMO)</strong>.
+                    </p>
+                    <br />
+                    <button id="drawMainBtn" class="primary-btn">
+                        <span class="icon">🎴</span>
+                        <span>Wylosuj swoją kartę</span>
+                    </button>
+                </div>
+
+                <div class="card-area">
+                    <div class="card-header">
+                        <div class="card-header-title">Twoja karta leczenia</div>
+                        <div class="card-header-sub">
+                            Talia: 173 karty (55 zielonych, 63 pomarańczowych, 55 czerwonych)
+                        </div>
+                    </div>
+
+                    <div class="card-visual-wrapper">
+                        <!-- Obszar tasowania / karty -->
+                        <div id="shuffleView" class="card-visual" style="display: none;">
+                            <div class="shuffle-stack">
+                                <div class="shuffle-card"></div>
+                                <div class="shuffle-card"></div>
+                                <div class="shuffle-card"></div>
+                                <div class="shuffle-label">Tasowanie kart… proszę czekać</div>
+                            </div>
+                        </div>
+
+                        <div id="resultView" class="card-visual">
+                            <div id="resultCard" class="card">
+                                <div class="card-tag">Kliknij „Wylosuj”</div>
+                                <div class="card-icon">💊</div>
+                                <div class="card-label">Brak wylosowanej karty</div>
+                                <div class="card-desc">
+                                    Wciśnij przycisk „Wylosuj swoją kartę”, aby zobaczyć, jaki dostęp do leczenia otrzymasz.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer-text">
+                        Każde losowanie to inny scenariusz. Dla prawdziwych pacjentów to nie jest zabawa, lecz realna sytuacja, która decyduje o ich życiu.
+                    </div>
+                    <div class="card-actions">
+                        <button id="drawAgainBtn" class="secondary-btn">Wylosuj ponownie</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="info">
+            <div class="info-grid">
+                <div>
+                    <h2>Co oznaczają kolory kart?</h2>
+                    <p>
+                        Talia składa się ze 173 kart, które symbolicznie odzwierciedlają sytuację pacjentów onkologicznych
+                        w Polsce w kontekście dostępu do terapii rekomendowanych przez europejskie towarzystwa naukowe.
+                    </p>
+                    <p>
+                        Losując kartę, doświadczasz w uproszczony sposób tego, jak bardzo wynik leczenia może zależeć
+                        od decyzji refundacyjnych, a nie tylko od medycyny i wiedzy lekarzy.
+                    </p>
+                </div>
+                <div>
+                    <div class="legend">
+                        <div class="legend-title">Legenda talii (173 karty)</div>
+                        <div class="legend-item">
+                            <div class="legend-color green"></div>
+                            <div><strong>55 kart zielonych</strong> – Pełna refundacja NFZ</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color amber"></div>
+                            <div><strong>63 karty żółto‑pomarańczowe</strong> – Refundacja z ograniczeniami</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color red"></div>
+                            <div><strong>55 kart czerwonych</strong> – Brak refundacji i dostępu do leku</div>
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+                            Rozkład kart inspirowany jest analizami dostępności terapii onkologicznych (m.in. Oncoindex, rekomendacje ESMO),
+                            ale ma charakter edukacyjno‑symboliczny, a nie statystycznie precyzyjny.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Projekt edukacyjny inspirowany danymi z serwisu Oncoindex oraz rekomendacjami ESMO.  
+        Strona ma charakter informacyjny i nie stanowi konsultacji medycznej.
+    </footer>
+</div>
+
+<script>
+    // Konfiguracja talii: 173 karty
+    // 1–55: zielone, 56–118: pomarańczowe, 119–173: czerwone
+    const TOTAL_CARDS = 173;
+    const GREEN_MAX = 55;
+    const AMBER_MAX = 118; // 55 + 63
+    const RED_MAX = 173;   // 118 + 55
+
+    const drawMainBtn = document.getElementById('drawMainBtn');
+    const drawAgainBtn = document.getElementById('drawAgainBtn');
+    const shuffleView = document.getElementById('shuffleView');
+    const resultView = document.getElementById('resultView');
+    const resultCard = document.getElementById('resultCard');
+
+    let isShuffling = false;
+    const SHUFFLE_TIME_MS = 6000; // 6 sekund
+
+    function startShuffle() {
+        if (isShuffling) return;
+        isShuffling = true;
+
+        // Pokaż tasowanie, ukryj wynik
+        shuffleView.style.display = 'flex';
+        resultView.style.display = 'none';
+
+        // Zablokuj przyciski na czas tasowania
+        drawMainBtn.disabled = true;
+        drawAgainBtn.disabled = true;
+
+        setTimeout(() => {
+            const card = drawCard();
+            showCard(card);
+            shuffleView.style.display = 'none';
+            resultView.style.display = 'flex';
+            drawMainBtn.disabled = false;
+            drawAgainBtn.disabled = false;
+            isShuffling = false;
+        }, SHUFFLE_TIME_MS);
+    }
+
+    function drawCard() {
+        const randomNumber = Math.floor(Math.random() * TOTAL_CARDS) + 1;
+
+        if (randomNumber <= GREEN_MAX) {
+            return {
+                type: 'green',
+                title: 'Pełna refundacja NFZ',
+                desc: 'Masz dostęp do terapii rekomendowanej przez ekspertów. W tym scenariuszu system Ci sprzyja.',
+                color: getComputedStyle(document.documentElement).getPropertyValue('--card-green').trim()
+            };
+        } else if (randomNumber <= AMBER_MAX) {
+            return {
+                type: 'amber',
+                title: 'Refundacja z ograniczeniami',
+                desc: 'Leczenie jest dostępne tylko w określonych sytuacjach, programach lub z istotnymi ograniczeniami.',
+                color: getComputedStyle(document.documentElement).getPropertyValue('--card-amber').trim()
+            };
+        } else {
+            return {
+                type: 'red',
+                title: 'Brak refundacji i dostępu do leku',
+                desc: 'Terapia istnieje, ale w praktyce pozostaje poza Twoim zasięgiem. To niestety realny scenariusz dla wielu pacjentów, którym podany zostanie nie najskuteczniejszy a jedynie "dostępny" lek',
+                color: getComputedStyle(document.documentElement).getPropertyValue('--card-red').trim()
+            };
+        }
+    }
+
+    function showCard(card) {
+        // Reset klasy
+        resultCard.style.background = card.color;
+        resultCard.style.color = '#ffffff';
+
+        const iconEl = resultCard.querySelector('.card-icon');
+        const labelEl = resultCard.querySelector('.card-label');
+        const descEl = resultCard.querySelector('.card-desc');
+        const tagEl = resultCard.querySelector('.card-tag');
+
+        iconEl.textContent = '💊';
+        labelEl.textContent = card.title;
+        descEl.textContent = card.desc;
+
+        if (card.type === 'green') {
+            tagEl.textContent = 'Karta zielona';
+        } else if (card.type === 'amber') {
+            tagEl.textContent = 'Karta pomarańczowa';
+        } else {
+            tagEl.textContent = 'Karta czerwona';
+        }
+
+        // Delikatny efekt obrotu przy odsłonięciu
+        resultCard.style.transform = 'rotateY(0deg)';
+        resultCard.getBoundingClientRect(); // wymuszenie reflow
+        resultCard.style.transform = 'rotateY(0deg)';
+    }
+
+    drawMainBtn.addEventListener('click', startShuffle);
+    drawAgainBtn.addEventListener('click', startShuffle);
+</script>
+</body>
+</html>
